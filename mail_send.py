@@ -5,19 +5,21 @@ from email.mime.text import MIMEText
 import time
 
 
-api_key = ""  # апи ключ вб для обработки вопросов
-fromaddr = "example1@mail.ru"  # почта, с которой будет уходить письмо
-mypass = "password"  # пароль от почты для внешних приложений
-toaddr = "example2@mail.ru"  # почта, на которую отправлять письмо
-questions_sum = (
+#==========================================================#
+API_KEY = ""  # апи ключ вб для обработки вопросов
+FROM_ADDR = "example1@mail.ru"  # почта, с которой будет уходить письмо
+MAIL_PASSWORD = "password"  # пароль от почты для внешних приложений
+TO_ADDR = "example2@mail.ru"  # почта, на которую отправлять письмо
+QUESTIONS_SUM = (
     10  # количество кейсов, которые необходимо отправить (1 кейс = 1 вопрос)
 )
+#==========================================================#
 
 
 def get_answers(value):
     url = "https://feedbacks-api.wildberries.ru/api/v1/questions"
     headers = {
-        "Authorization": api_key,
+        "Authorization": API_KEY,
     }
     params = {
         "isAnswered": False,
@@ -68,11 +70,11 @@ def send_mail(value):
 <p>Артикул продавца: {case['productDetails']['supplierArticle']}</p>
 <br>
 """
-        print(f"Начинаю отправку сообщения(кейса) на email {toaddr}.")
+        print(f"Начинаю отправку сообщения(кейса) на email {TO_ADDR}.")
 
         msg = MIMEMultipart()
-        msg["From"] = fromaddr
-        msg["To"] = toaddr
+        msg["From"] = FROM_ADDR
+        msg["To"] = TO_ADDR
         msg["Subject"] = tema
         msg.attach(MIMEText(body, "html"))
 
@@ -82,9 +84,9 @@ def send_mail(value):
         for _ in range(max_retries):
             try:
                 server = smtplib.SMTP_SSL("smtp.mail.ru", 465)
-                server.login(fromaddr, mypass)
+                server.login(FROM_ADDR, MAIL_PASSWORD)
                 text = msg.as_string()
-                server.sendmail(fromaddr, toaddr, text)
+                server.sendmail(FROM_ADDR, TO_ADDR, text)
                 server.quit()
                 current_index = cases.index(case)
                 print(
@@ -101,4 +103,4 @@ def send_mail(value):
 
 
 if __name__ == "__main__":
-    send_mail(questions_sum)
+    send_mail(QUESTIONS_SUM)
